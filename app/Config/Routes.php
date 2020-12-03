@@ -1,5 +1,7 @@
 <?php namespace Config;
 
+use App\Filters\AuthFilter;
+
 // Create a new instance of our RouteCollection class.
 $routes = Services::routes();
 
@@ -32,7 +34,8 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Home::index');
 $routes->post('/auth/login', 'Auth::login');
-$routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes){
+
+$routes->group('api', ['namespace' => 'App\Controllers\API', 'filter' => 'authFilter'], function ($routes) {
 	//RUTAS REGISTRO DE ROLES
 	$routes->get('roles', 'Roles::index');
 	$routes->post('roles/create', 'Roles::create');
@@ -60,7 +63,6 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes){
 	$routes->delete('grados/delete/(:num)', 'Grados::delete/$1');
 	$routes->get('grados/show/(:num)', 'Grados::show/$1');
 
-
 	//rutas para Estudiantes
 	$routes->get('estudiantes', 'Estudiantes::index');
 	$routes->post('estudiantes/create', 'Estudiantes::create');
@@ -68,7 +70,12 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes){
 	$routes->put('estudiantes/update/(:num)', 'Estudiantes::update/$1');
 	$routes->delete('estudiantes/delete/(:num)', 'Estudiantes::delete/$1');
 
-
+	//rutas para Estudiantes
+	$routes->get('estudiantes', 'Estudiantes::index');
+	$routes->post('estudiantes/create', 'Estudiantes::create');
+	$routes->get('estudiantes/edit/(:num)', 'Estudiantes::edit/$1');
+	$routes->put('estudiantes/update/(:num)', 'Estudiantes::update/$1');
+	$routes->delete('estudiantes/delete/(:num)', 'Estudiantes::delete/$1');
 });
 
 /**
