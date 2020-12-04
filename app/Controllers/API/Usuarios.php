@@ -8,17 +8,28 @@ class Usuarios extends ResourceController
     public function __construct()
     {
         $this->model = $this->setModel(new UsuarioModel());
+        helper('access_rol');
     }
 
     public function index()
 	{
-        $usuarios = $this->model->findAll();
-		return $this->respond($usuarios);
+        
+        try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
+        
+            $usuarios = $this->model->findAll();
+            return $this->respond($usuarios);
+        } catch (\Exception $e) {
+            return $this->failServerError('Error en el servidor');
+        }
     }
     
     public function create()
     {
         try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
             $usuario = $this->request->getJSON();
             if($this->model->insert($usuario)) {
                 $usuario->id = $this->model->insertID();
@@ -34,6 +45,8 @@ class Usuarios extends ResourceController
     public function delete($id = null)
 	{
 		try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
             if ($id == null)
                 return $this->failValidationError('No se ha pasado un Id valido');
             

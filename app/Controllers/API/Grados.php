@@ -10,24 +10,35 @@ class Grados extends ResourceController
     public function __construct()
     {
         $this->model = $this->setModel(new GradoModel());
+        helper('access_rol');
     }  
      
 	public function index()
 	{   
-        $ProfesorModel = new ProfesorModel();
+        try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
+        
+                $ProfesorModel = new ProfesorModel();
 
-        $getGrados = $this->model->findAll();
-        foreach ($getGrados as $value) {
-            $value["profesor"] = $ProfesorModel->find($value["profesor_id"]);
-            $grados[] = $value;
+                $getGrados = $this->model->findAll();
+                foreach ($getGrados as $value) {
+                    $value["profesor"] = $ProfesorModel->find($value["profesor_id"]);
+                    $grados[] = $value;
+                }
+        
+                return $this->respond($grados);
+        } catch (\Exception $e) {
+            return $this->failServerError('Error en el servidor');
         }
-
-        return $this->respond($grados);
+        
     }
     
     public function create()
     {
         try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
             $grado = $this->request->getJSON();
             if($this->model->insert($grado)) {
                 $grado->id = $this->model->insertID();
@@ -43,6 +54,8 @@ class Grados extends ResourceController
     public function edit($id = null)
 	{
         try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
             if ($id == null)
                 return $this->failValidationError('No se ha pasado un Id valido');
             
@@ -59,6 +72,8 @@ class Grados extends ResourceController
     public function update($id = null)
 	{
         try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
             if ($id == null)
                 return $this->failValidationError('No se ha pasado un Id valido');
             
@@ -85,6 +100,8 @@ class Grados extends ResourceController
     public function delete($id = null)
 	{
 		try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
             if ($id == null)
                 return $this->failValidationError('No se ha pasado un Id valido');
             
@@ -107,6 +124,8 @@ class Grados extends ResourceController
     
     public function show($id = null){
         try {
+            if(!validateAccess(array('admin'), $this->request->getServer('HTTP_AUTHORIZATION')))
+                return $this->failServerError('El rol no tiene acceso a este recurso');
             if ($id == null)
                 return $this->failValidationError('No se ha pasado un Id valido');
             
